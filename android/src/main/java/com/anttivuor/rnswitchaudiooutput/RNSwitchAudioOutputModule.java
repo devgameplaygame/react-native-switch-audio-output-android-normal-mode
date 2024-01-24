@@ -76,21 +76,21 @@ public class RNSwitchAudioOutputModule extends ReactContextBaseJavaModule {
             AudioManager audioManager = (AudioManager) context.getSystemService(context.AUDIO_SERVICE);
 
             if (deviceName.equals("Bluetooth")) {
-                audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+                audioManager.setMode(AudioManager.MODE_NORMAL);
                 audioManager.startBluetoothSco();
                 audioManager.setBluetoothScoOn(true);
                 audioManager.setSpeakerphoneOn(false);
                 promise.resolve(true);
                 return;
             } else if (deviceName.equals("Headset")) {
-                audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+                audioManager.setMode(AudioManager.MODE_NORMAL);
                 audioManager.stopBluetoothSco();
                 audioManager.setBluetoothScoOn(false);
                 audioManager.setSpeakerphoneOn(false);
                 promise.resolve(true);
                 return;
             } else if (deviceName.equals("Speaker")) {
-                audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+                audioManager.setMode(AudioManager.MODE_NORMAL);
                 audioManager.stopBluetoothSco();
                 audioManager.setBluetoothScoOn(false);
                 audioManager.setSpeakerphoneOn(true);

@@ -22,3 +22,6 @@ const devices = await AudioOutput.getAudioDevices();
 AudioOutput.setAudioDevice("Bluetooth");
 // Note: the device must be one of the values that getAudioDevices() returned
 ```
+
+## Credits
+The original code is from https://github.com/anttivuor/react-native-switch-audio-output-android by Antti Vuorenmaa
