@@ -4,14 +4,14 @@ Library for selecting audio output source (**only for Android**). Uses Android's
 ## Getting started
 
 ```bash
-npm install react-native-switch-audio-output-android
+npm install react-native-switch-audio-output-android-normal-mode
 # or
-yarn add react-native-switch-audio-output-android
+yarn add react-native-switch-audio-output-android-normal-mode
 ```
 
 ## Usage
 ```javascript
-import AudioOutput from 'react-native-switch-audio-output-android';
+import AudioOutput from 'react-native-switch-audio-output-android-normal-mode';
 
 // Get list of possible devices
 const devices = await AudioOutput.getAudioDevices();
