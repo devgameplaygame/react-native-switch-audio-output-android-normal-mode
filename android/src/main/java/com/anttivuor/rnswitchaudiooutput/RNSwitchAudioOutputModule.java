@@ -2,8 +2,11 @@ package com.anttivuor.switchaudiooutput;
 
 import android.content.Context;
 
+import android.os.Build;
 import android.media.AudioManager;
 import android.media.AudioDeviceInfo;
+import android.media.AudioAttributes;
+import android.media.AudioFocusRequest;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -102,4 +105,40 @@ public class RNSwitchAudioOutputModule extends ReactContextBaseJavaModule {
             promise.reject("SetAudioDevice", e.getMessage());
         }
     }
+
+    @ReactMethod
+    public void requestAudioFocus(Promise promise){
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Context context = this.reactContext.getApplicationContext();
+                AudioManager audioManager = (AudioManager) context.getSystemService(context.AUDIO_SERVICE);
+                AudioAttributes playbackAttributes = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .build();
+
+                AudioFocusRequest audioFocusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+                    .setAudioAttributes(playbackAttributes)
+                    .build();
+
+                final Object focusLock = new Object();
+
+                int res = audioManager.requestAudioFocus(audioFocusRequest);
+                synchronized(focusLock) {
+                    if (res == AudioManager.AUDIOFOCUS_REQUEST_FAILED) {
+                        promise.resolve(false);
+                    } else if (res == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                        promise.resolve(true);
+                    } else if (res == AudioManager.AUDIOFOCUS_REQUEST_DELAYED) {
+                        promise.resolve(false);
+                    }
+                }
+            }
+        }
+        catch (Exception e){
+            promise.reject("requestAudioFocus", e.getMessage());
+        }
+
+    }
+
 }
