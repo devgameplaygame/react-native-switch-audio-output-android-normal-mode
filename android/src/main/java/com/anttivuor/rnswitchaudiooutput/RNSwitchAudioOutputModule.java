@@ -7,6 +7,8 @@ import android.media.AudioManager;
 import android.media.AudioDeviceInfo;
 import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
+import android.media.MediaRouter;
+import android.media.MediaRouter.RouteInfo;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -77,30 +79,65 @@ public class RNSwitchAudioOutputModule extends ReactContextBaseJavaModule {
         try {
             Context context = this.reactContext.getApplicationContext();
             AudioManager audioManager = (AudioManager) context.getSystemService(context.AUDIO_SERVICE);
+            MediaRouter mediaRouter = (MediaRouter) context.getSystemService(context.MEDIA_ROUTER_SERVICE);
 
             if (deviceName.equals("Bluetooth")) {
-                audioManager.setMode(AudioManager.MODE_NORMAL);
                 audioManager.startBluetoothSco();
-                audioManager.setBluetoothScoOn(true);
+                audioManager.setBluetoothScoOn(false);
+                audioManager.setBluetoothA2dpOn(true);
                 audioManager.setSpeakerphoneOn(false);
-                promise.resolve(true);
-                return;
             } else if (deviceName.equals("Headset")) {
-                audioManager.setMode(AudioManager.MODE_NORMAL);
                 audioManager.stopBluetoothSco();
                 audioManager.setBluetoothScoOn(false);
+                audioManager.setBluetoothA2dpOn(false);
                 audioManager.setSpeakerphoneOn(false);
-                promise.resolve(true);
-                return;
             } else if (deviceName.equals("Speaker")) {
-                audioManager.setMode(AudioManager.MODE_NORMAL);
                 audioManager.stopBluetoothSco();
                 audioManager.setBluetoothScoOn(false);
+                audioManager.setBluetoothA2dpOn(false);
                 audioManager.setSpeakerphoneOn(true);
-                promise.resolve(true);
-                return;
+            } 
+
+            audioManager.setMode(AudioManager.MODE_NORMAL); 
+            int routeCount = mediaRouter.getRouteCount();
+
+            WritableArray output = Arguments.createArray();
+
+            for(int i= 0; i < routeCount; i++){
+                
+                RouteInfo routeInfo = mediaRouter.getRouteAt(i);
+
+                output.pushString(" deviceType: " + routeInfo.getDeviceType() + ", " + routeInfo.getName());
+
+                if (routeInfo.getDeviceType() == RouteInfo.DEVICE_TYPE_BLUETOOTH && deviceName.equals("Bluetooth")){
+                    mediaRouter.selectRoute(mediaRouter.ROUTE_TYPE_LIVE_AUDIO, routeInfo);
+                    output.pushString("Bluetooth enabled");
+                    promise.resolve(output);
+                    return;
+                }
+                
+                if (routeInfo.getDeviceType() == RouteInfo.DEVICE_TYPE_UNKNOWN && deviceName.equals("Speaker")) {
+                    mediaRouter.selectRoute(mediaRouter.ROUTE_TYPE_LIVE_AUDIO, routeInfo);
+                    output.pushString("Speaker enabled");
+                    promise.resolve(output);
+                    return;
+                }
+                if (routeInfo.getDeviceType() == RouteInfo.DEVICE_TYPE_UNKNOWN && deviceName.equals("Headset")) {
+                    mediaRouter.selectRoute(mediaRouter.ROUTE_TYPE_LIVE_AUDIO, routeInfo);
+                    output.pushString("Headset enabled");
+                    promise.resolve(output);
+                    return;
+                }
+
+                if (routeInfo.getDeviceType() == RouteInfo.DEVICE_TYPE_UNKNOWN && deviceName.equals("Phone")){
+                    mediaRouter.selectRoute(mediaRouter.ROUTE_TYPE_LIVE_AUDIO, routeInfo);
+                    output.pushString("Phone enabled");
+                    promise.resolve(output);
+                    return;
+                }
+
             }
-            promise.resolve(false);
+            promise.resolve(output);
         } catch (Exception e) {
             promise.reject("SetAudioDevice", e.getMessage());
         }
