@@ -82,7 +82,7 @@ public class RNSwitchAudioOutputModule extends ReactContextBaseJavaModule {
             MediaRouter mediaRouter = (MediaRouter) context.getSystemService(context.MEDIA_ROUTER_SERVICE);
 
             if (deviceName.equals("Bluetooth")) {
-                audioManager.startBluetoothSco();
+                audioManager.stopBluetoothSco();
                 audioManager.setBluetoothScoOn(false);
                 audioManager.setBluetoothA2dpOn(true);
                 audioManager.setSpeakerphoneOn(false);
