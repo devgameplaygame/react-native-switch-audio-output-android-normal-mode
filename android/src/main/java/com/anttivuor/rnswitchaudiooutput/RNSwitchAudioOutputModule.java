@@ -41,6 +41,9 @@ public class RNSwitchAudioOutputModule extends ReactContextBaseJavaModule {
                 return "Bluetooth";
             case(AudioDeviceInfo.TYPE_WIRED_HEADPHONES):
             case(AudioDeviceInfo.TYPE_WIRED_HEADSET):
+            case(AudioDeviceInfo.TYPE_USB_DEVICE):
+            case(AudioDeviceInfo.TYPE_USB_ACCESSORY):
+            case(AudioDeviceInfo.TYPE_USB_HEADSET):
                 return "Headset";
             case(AudioDeviceInfo.TYPE_BUILTIN_MIC):
                 return "Phone";
